@@ -12,6 +12,16 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.os_manager import ChromeType
 import json
+import os
+from dotenv import load_dotenv
+load_dotenv()
+import os
+from supabase import create_client
+import requests
+
+url = os.environ.get("SUPABASE_URL")
+key = os.environ.get("SUPABASE_KEY")
+supabase = create_client(url, key)
 
 user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
 chrome_options = Options()
@@ -38,9 +48,8 @@ data = json.loads(pre_element.text)
 esg_symbols = [entry['TickerCode'] for entry in data['result']]
 print(esg_symbols)
 
-
 esg_data_list = []
-for symbol in esg_symbols[:3]:
+for symbol in esg_symbols:
 
     url = f'https://idx.co.id/secondary/get/esg/detail/{symbol}?language=en-us'
     driver.get(url)
@@ -52,19 +61,31 @@ for symbol in esg_symbols[:3]:
     data = json.loads(pre_element.text)
 
     esg_data = {
-        'symbol': data['result'][0].get('TickerCode', ''),
-        'last_esg_update_date': data['result'][0].get('LastUpdate', ''),
+        'symbol': data['result'][0].get('TickerCode', '')+'.JK',
+        'last_esg_update_date': pd.Timestamp(data['result'][0].get('LastUpdate', '')).strftime("%Y%m%d_%H%M%S"),
         'esg_score': data['result'][0].get('ESGScore', ''),
-        'controversy_risk': data['result'][0].get('ControversyRiskScore', ''),
+        'controversy_risk': int(data['result'][0].get('ControversyRiskScore', '')),
         'environment_risk_score': data['result'][0].get('EnvironmentRiskScore', ''),
         'social_risk_score': data['result'][0].get('SocialRiskScore', ''),
         'governance_risk_score': data['result'][0].get('GovernanceRiskScore', ''),
-        'updated_on': datetime.now()
+        'updated_on': pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
     }
 
-    print(esg_data)
 
+    print(esg_data)
     esg_data_list.append(esg_data)
+
+    try:
+        response = supabase.table('idx_esg_score').upsert(esg_data).execute()
+        if response.data[0]['esg_score'] is not None:
+            print(f"Upserted data for symbol: {symbol}")
+        else:
+            print(f"Updated ESG Score still None: {symbol}")
+    except:
+        print(f"Error upserting data for symbol: {symbol}")
+
+
+
 # Create a DataFrame
 df = pd.DataFrame(esg_data_list)
 df.to_csv('esg.csv', index = False)
