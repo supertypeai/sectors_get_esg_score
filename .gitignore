@@ -11,6 +11,5 @@ yfinance.cache
 *.webp
 *.jpg
 *.jpeg
-*.txt
 *.png
 *.svg
