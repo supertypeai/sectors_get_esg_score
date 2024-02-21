@@ -26,7 +26,7 @@ supabase = create_client(url, key)
 user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
 chrome_options = Options()
 options = [
-    # "--headless",
+    "--headless",
     f"--user-agent={user_agent}",
 ]
 for option in options:
@@ -88,5 +88,5 @@ for symbol in esg_symbols:
 
 # Create a DataFrame
 df = pd.DataFrame(esg_data_list)
-df.to_csv('esg.csv', index = False)
+df.to_csv('esg2.csv', index = False)
 
