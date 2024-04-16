@@ -32,7 +32,7 @@ for symbol in esg_symbols:
     url = f'https://idx.co.id/secondary/get/esg/detail/{symbol}?language=en-us'
     with urllib.request.urlopen(url) as response:
         html = response.read()
-        data = json.loads(html.text)
+        data = json.loads(html)
 
         esg_data = {
             'symbol': data['result'][0].get('TickerCode', '')+'.JK',
