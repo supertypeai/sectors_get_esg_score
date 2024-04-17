@@ -64,5 +64,5 @@ for symbol in esg_symbols:
 
 # Create a DataFrame
 df = pd.DataFrame(esg_data_list)
-df.to_csv('esg2.csv', index = False)
+df.to_csv('esg.csv', index = False)
 
