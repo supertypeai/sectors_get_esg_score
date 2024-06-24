@@ -1,1 +1,1 @@
-For faster process, please use idxesgupdater_direct_api.py
+For faster process, use v3_brighdata_idx.py
