@@ -34,11 +34,11 @@ For use the pipeline, you must input the parameter :
 The morning star pipeline will return several data for ESG Score. List of data from the pipeline :
 1. **symbol** : The identifier of the company, such as INCO.JKT, AALI.JKT, etc
 2. **last_esg_update_date**: This date indicates when the company research was updated for any reason other than completing its annual report cycle. E.g., Sub-industry assessment, news monitoring event, change to metrics/indicators. (Sources : Morning Star)
-3. **esg_score** : ESG refers to the three central factors of measuring the impact of sustainability and ethics in making investment decisions.  (Sources : IDX)
-4. **controversy_risk** : The Controversy Rating reflects a company’s level of involvement in issues and how it manages these issues. (Sources :Morning Star)
-5. **environment_risk_score** : The environmental risk represents the unmanaged environmental risk exposure after taking into account a company’s management of such risks. (Sources : Morning Star)
-6. **social_risk_score** : The social risk represents unmanaged social risk exposure after taking into account a company’s management of such risks. (Sources : Morning Star)
-7. **governance_risk_score** : The governance risk represents the unmanaged governance risk exposure after taking into account a company's management of such risks. (Sources : Morning Star)
+3. **esg_score** : ESG refers to the three central factors of measuring the impact of sustainability and ethics in making investment decisions.  (Sources : Morning Star)
+4. **controversy_risk** : The Controversy Rating reflects a company’s level of involvement in issues and how it manages these issues. (Sources :Idx)
+5. **environment_risk_score** : The environmental risk represents the unmanaged environmental risk exposure after taking into account a company’s management of such risks. (Sources : Idx)
+6. **social_risk_score** : The social risk represents unmanaged social risk exposure after taking into account a company’s management of such risks. (Sources :Idx)
+7. **governance_risk_score** : The governance risk represents the unmanaged governance risk exposure after taking into account a company's management of such risks. (Sources : Idx)
 8. **updated on** : The time when the data is updated in the database.
 9. **industry_rank** : The company ranks in certain industry categories in Morning Star.
 10. **total_company_on_industry** : The total number of companies in certain industry categories.
