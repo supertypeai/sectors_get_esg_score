@@ -18,7 +18,7 @@ For use the pipeline, you must input the parameter :
                   <br />1: Low (10 - 20)
                   <br />2: Medium (20 - 30)
                   <br />3: High (30 - 40)
-                  <br />4: Severe (40+) <br /> To use the rating filter, you must input the number of rating, like 0, 1, 3, 4.
+                  <br />4: Severe (40+) <br /> To use the rating filter, you must input the number of rating, like 0, 1, 2, 3, 4.
 
 3. **name**            : Input for company's name. you can input names like PT Vale Indonesia Tbk, 11 Bit Studios SA, etc.
                   <br /> You also can input the ticker like JKT:INCO, NAS:FLWS, etc.
@@ -49,14 +49,32 @@ The morning star pipeline will return several data for ESG Score. List of data f
 
 *Note* : You have to be careful for NULL value on data. if the data doesn't exist, the data will return NULL value on the column.
 
-For rank of company in industry categories, you can use: <br />
-```
-industry_rank out of total_company_on_industry
-```
+### how to interpret rankings?
 
-For global rank of company in worldwide, you can use: <br />
-```
-global_rank out of total_companies_on_ms
-```
+For rank of company in industry categories: <br />
+
+*industry_rank out of total_company_on_industry* <br />
+
+**example** : <br />
+Company Name : Astra Agro Lestari (AALI.JK) <br />
+Industry Group : Food Products<br />
+Industry rank : 515 out of 646<br />
+
+**Interpretation** : <br />
+In Food Products sectors, Astra Agro Lestari(AALI.JK) is ranked 515th out of 614 companies in the indusry sectors. <br />
+The higher the company's rank, the better the company is at managing risk in certain sectors <br />
+
+For global rank of company in worldwide: <br />
+
+*global_rank out of total_companies_on_ms*  <br />
+
+**example** : <br />
+Company Name : Astra Agro Lestari (AALI.JK) <br />
+Industry rank in global : 15184 out of 16215<br />
+
+**Interpretation** : <br />
+In global, Astra Agro Lestari(AALI.JK) is ranked 15184th out of 16215 companies in the worldwide. <br />
+The higher the company's rank, the better the company is at managing risk in global <br />
+
 
 #### Happy Coding All !!!
