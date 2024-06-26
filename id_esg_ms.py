@@ -50,9 +50,6 @@ for i in companies_id:
         symb = symb_split[1] + ".JK"
         results[0]["symbol"] = symb
         results[0]["controversy_risk"] = None
-        results[0]["environment_risk_score"] = None
-        results[0]["social_risk_score"] = None
-        results[0]["governance_risk_score"] = None
         del results[0]['country']
 
         if  results[0]["symbol"] in list(df_idx["symbol"]):
@@ -60,21 +57,6 @@ for i in companies_id:
                 results[0]["controversy_risk"] = int(df_idx[df_idx["symbol"] ==  results[0]["symbol"]]["controversy_risk"].iloc[0])
             except:
                 results[0]["controversy_risk"] = None
-            
-            try : 
-                results[0]["environment_risk_score"] = float(df_idx[df_idx["symbol"] ==  results[0]["symbol"]]["environment_risk_score"].iloc[0])
-            except :
-                results[0]["environment_risk_score"] = None
-
-            try :
-                results[0]["social_risk_score"] = float(df_idx[df_idx["symbol"] ==  results[0]["symbol"]]["social_risk_score"].iloc[0])
-            except :
-                results[0]["social_risk_score"] = None
-
-            try : 
-                results[0]["governance_risk_score"] = float(df_idx[df_idx["symbol"] ==  results[0]["symbol"]]["governance_risk_score"].iloc[0])
-            except :
-                results[0]["governance_risk_score"] = None
             
 
         results[0]["updated_on"] = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
