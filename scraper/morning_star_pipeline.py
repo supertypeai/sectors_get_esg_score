@@ -7,6 +7,8 @@ load_dotenv()
 import ssl
 import urllib.request
 ssl._create_default_https_context = ssl._create_unverified_context
+import http.cookiejar as cookiejar
+
 
 class MorningStarPipeline:
     """ Parameter explained : 
@@ -31,7 +33,7 @@ class MorningStarPipeline:
 
         Note             : For retrieve all data on MS. you must input industry, rating, and filter with "" (empty-string, not whitespace)
     """
-    def __init__(self, industry, rating,  name, amount, country, proxy):
+    def __init__(self, industry, rating,  name, amount, country, proxy, cookies):
         self.url = "https://www.sustainalytics.com/sustapi/companyratings/getcompanyratings"
         self.industry = industry
         self.rating = rating
@@ -39,6 +41,7 @@ class MorningStarPipeline:
         self.amount = amount
         self.country = country
         self.proxy = proxy
+        self.cookies = cookies
 
     def get_company_name(self, soup):
         try :
@@ -117,17 +120,46 @@ class MorningStarPipeline:
             return identifier.text
         except:
             return None 
+        
+    def get_controversy_risk(self, soup):
+        try : 
+            controversy_risks = soup.find("ul", {"class": "controversy-levels"}).find_all("li", {"class" : "level-on"})
+            print("There is controversy risk")
+            return len(controversy_risks)
+        except :
+            print("There is n't controversy risk")
+            return 0
+        
+    def get_management(self, soup):
+        try:
+            management = soup.find("strong", {"class": "company-risk-management-assessment"})
+            return management.text 
+        except :
+            return None
     
     def get_company_data(self, url):
         # print("testin")
         response = requests.get(url)
         company_data = dict()
 
-        # proxy = os.environ.get("proxy")
 
         proxy_support = urllib.request.ProxyHandler({'http': self.proxy,'https': self.proxy})
         opener = urllib.request.build_opener(proxy_support)
         urllib.request.install_opener(opener)
+
+        cookie_jar = cookiejar.CookieJar()
+        cookie_handler = urllib.request.HTTPCookieProcessor(cookie_jar)
+        opener.add_handler(cookie_handler)
+
+        # Add a specific cookie
+        cookie = cookiejar.Cookie(
+            version=0, name='ratingsvm', value=self.cookies, port=None, port_specified=False,
+            domain='www.sustainalytics.com', domain_specified=False, domain_initial_dot=False,
+            path='/', path_specified=True, secure=True, expires=None, discard=True,
+            comment=None, comment_url=None, rest={'HttpOnly': True}, rfc2109=False
+        )
+
+        cookie_jar.set_cookie(cookie)
 
         with urllib.request.urlopen(url) as response:
             html = response.read()
@@ -195,6 +227,12 @@ class MorningStarPipeline:
 
             identifier = self.get_identifer(soup)
             company_data["symbol"] = identifier 
+
+            controversy_risk  = self.get_controversy_risk(soup)
+            company_data["controversy_risk"] = controversy_risk
+
+            management  = self.get_management(soup)
+            company_data["management"] = management
 
             return company_data
 
