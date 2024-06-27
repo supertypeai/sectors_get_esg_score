@@ -53,15 +53,15 @@ def scraping_ms1(companies_id):
             del results[0]['country']
 
             results[0]["updated_on"] = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
-            # response = supabase.table('idx_esg_score').upsert(results[0]).execute()
-            # # print(response)
-            # try :
-            #     if response.data[0]['esg_score'] is not None:
-            #         print(f"Upserted data for symbol: {results[0]['symbol']}")
-            #     else:
-            #         print(f"Updated ESG Score still None: {results[0]['symbol']}")
-            # except:
-            #     print(f"Error upserting data for symbol: {results[0]['symbol']}")
+            response = supabase.table('idx_esg_score').upsert(results[0]).execute()
+            # print(response)
+            try :
+                if response.data[0]['esg_score'] is not None:
+                    print(f"Upserted data for symbol: {results[0]['symbol']}")
+                else:
+                    print(f"Updated ESG Score still None: {results[0]['symbol']}")
+            except:
+                print(f"Error upserting data for symbol: {results[0]['symbol']}")
 
             result_companies_with_esg_score.append(results[0])
 
@@ -102,15 +102,15 @@ def scraping_ms2(companies_id):
             del results[0]['country']
 
             results[0]["updated_on"] = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
-            # response = supabase.table('idx_esg_score').upsert(results[0]).execute()
-            # # print(response)
-            # try :
-            #     if response.data[0]['esg_score'] is not None:
-            #         print(f"Upserted data for symbol: {results[0]['symbol']}")
-            #     else:
-            #         print(f"Updated ESG Score still None: {results[0]['symbol']}")
-            # except:
-            #     print(f"Error upserting data for symbol: {results[0]['symbol']}")
+            response = supabase.table('idx_esg_score').upsert(results[0]).execute()
+            # print(response)
+            try :
+                if response.data[0]['esg_score'] is not None:
+                    print(f"Upserted data for symbol: {results[0]['symbol']}")
+                else:
+                    print(f"Updated ESG Score still None: {results[0]['symbol']}")
+            except:
+                print(f"Error upserting data for symbol: {results[0]['symbol']}")
 
             result_companies_with_esg_score.append(results[0])
 
@@ -151,15 +151,15 @@ def scraping_ms3(companies_id):
             del results[0]['country']
 
             results[0]["updated_on"] = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
-            # response = supabase.table('idx_esg_score').upsert(results[0]).execute()
-            # # print(response)
-            # try :
-            #     if response.data[0]['esg_score'] is not None:
-            #         print(f"Upserted data for symbol: {results[0]['symbol']}")
-            #     else:
-            #         print(f"Updated ESG Score still None: {results[0]['symbol']}")
-            # except:
-            #     print(f"Error upserting data for symbol: {results[0]['symbol']}")
+            response = supabase.table('idx_esg_score').upsert(results[0]).execute()
+            # print(response)
+            try :
+                if response.data[0]['esg_score'] is not None:
+                    print(f"Upserted data for symbol: {results[0]['symbol']}")
+                else:
+                    print(f"Updated ESG Score still None: {results[0]['symbol']}")
+            except:
+                print(f"Error upserting data for symbol: {results[0]['symbol']}")
 
             result_companies_with_esg_score.append(results[0])
 
@@ -200,15 +200,15 @@ def scraping_ms4(companies_id):
             del results[0]['country']
 
             results[0]["updated_on"] = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
-            # response = supabase.table('idx_esg_score').upsert(results[0]).execute()
-            # # print(response)
-            # try :
-            #     if response.data[0]['esg_score'] is not None:
-            #         print(f"Upserted data for symbol: {results[0]['symbol']}")
-            #     else:
-            #         print(f"Updated ESG Score still None: {results[0]['symbol']}")
-            # except:
-            #     print(f"Error upserting data for symbol: {results[0]['symbol']}")
+            response = supabase.table('idx_esg_score').upsert(results[0]).execute()
+            # print(response)
+            try :
+                if response.data[0]['esg_score'] is not None:
+                    print(f"Upserted data for symbol: {results[0]['symbol']}")
+                else:
+                    print(f"Updated ESG Score still None: {results[0]['symbol']}")
+            except:
+                print(f"Error upserting data for symbol: {results[0]['symbol']}")
 
             result_companies_with_esg_score.append(results[0])
 
