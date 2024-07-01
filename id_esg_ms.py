@@ -49,6 +49,9 @@ for i in range(0, len(companies_in_id_list)):
 
 def scraping_ms1(companies_id, href_companies):
     result_companies_with_esg_score = []
+    url = os.environ.get("SUPABASE_URL")
+    key = os.environ.get("SUPABASE_KEY")
+    supabase = create_client(url, key)
     for i in range(0, len(companies_id)): 
         
         print(f"[Start to retrieve - {companies_id[i]}]")
@@ -98,6 +101,9 @@ def scraping_ms1(companies_id, href_companies):
     print(f"Waktu eksekusi: {execution_time} detik")
 
 def scraping_ms2(companies_id, href_companies):
+    url = os.environ.get("SUPABASE_URL")
+    key = os.environ.get("SUPABASE_KEY")
+    supabase = create_client(url, key)
     result_companies_with_esg_score = []
     for i in range(0, len(companies_id)): 
         
@@ -148,6 +154,9 @@ def scraping_ms2(companies_id, href_companies):
     print(f"Waktu eksekusi: {execution_time} detik")
         
 def scraping_ms3(companies_id, href_companies):
+    url = os.environ.get("SUPABASE_URL")
+    key = os.environ.get("SUPABASE_KEY")
+    supabase = create_client(url, key)
     result_companies_with_esg_score = []
     for i in range(0, len(companies_id)): 
         
@@ -198,6 +207,9 @@ def scraping_ms3(companies_id, href_companies):
     print(f"Waktu eksekusi: {execution_time} detik")
 
 def scraping_ms4(companies_id, href_companies):
+    url = os.environ.get("SUPABASE_URL")
+    key = os.environ.get("SUPABASE_KEY")
+    supabase = create_client(url, key)
     result_companies_with_esg_score = []
     for i in range(0, len(companies_id)): 
         
