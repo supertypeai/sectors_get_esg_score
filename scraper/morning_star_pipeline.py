@@ -173,18 +173,11 @@ class MorningStarPipeline:
         # print("testin")
         # response = requests.get(url)
         company_data = dict()
+        ssl._create_default_https_context = ssl._create_unverified_context
 
-#
-        proxy_support = urllib.request.ProxyHandler({'http': self.proxy,'https': self.proxy})
-        opener = urllib.request.build_opener(proxy_support)
-        urllib.request.install_opener(opener)
-
-        # a_request = urllib.request.Request(self.url)
-        # a_request.add_header("Cookie", "ratingsvm=MzhlNzY0ZWYtMDcyNi00MGY1LThlNjctMGY4MDUxNWYwZjQwNjM4NTUxNTYxMDIzMDU4NjU1; Path=/; Domain=sustainalytics.com; Secure; HttpOnly;")
-        # page = urllib.request.urlopen(a_request).read()
-
+        # Initialize a cookie jar
         cookie_jar = cookiejar.CookieJar()
-        
+
         # Add a specific cookie
         cookie = cookiejar.Cookie(
             version=0, name='ratingsvm', value=self.cookies, port=None, port_specified=False,
@@ -192,13 +185,28 @@ class MorningStarPipeline:
             path='/', path_specified=True, secure=True, expires=None, discard=True,
             comment=None, comment_url=None, rest={'HttpOnly': True}, rfc2109=False
         )
-
         cookie_jar.set_cookie(cookie)
-        cookie_handler = urllib.request.HTTPCookieProcessor(cookie_jar)
-        opener.add_handler(cookie_handler)
-        
 
-        with urllib.request.urlopen(url) as response:
+        # Set up a cookie handler with the cookie jar
+        cookie_handler = urllib.request.HTTPCookieProcessor(cookie_jar)
+
+        # # # Set up proxy handler if proxy is provided
+        # if proxy:
+        #     proxy_handler = urllib.request.ProxyHandler({'http': proxy, 'https': proxy})
+        #     opener = urllib.request.build_opener(cookie_handler, proxy_handler)
+        # else:
+        opener = urllib.request.build_opener(cookie_handler)
+
+        # Install the opener globally
+        urllib.request.install_opener(opener)
+
+        # Define the URL to request
+        # url = f"https://www.sustainalytics.com/esg-rating{}"
+
+        # Make the request
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+
+        with urllib.request.urlopen(req) as response:
             html = response.read()
             # print(html)
             
