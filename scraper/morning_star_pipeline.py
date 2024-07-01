@@ -136,21 +136,55 @@ class MorningStarPipeline:
             return management.text 
         except :
             return None
+        
+    def get_exposure(self, soup):
+        try :
+            exposure = soup.find("strong", {"class": "company-exposure-assessment"})
+            return exposure.text 
+        except: 
+            return None 
+        
+    def get_sdgi(self, soup):
+        try : 
+            sdgi_list = []
+            sdgi = soup.find_all("span", {"class": "mei-name"})
+            # print(sdgi)
+            for i in sdgi: 
+                sdgi_list.append(i.text)
+
+            # sdgi_text = ",".join(sdgi_list)
+            return sdgi_list
+        except:
+            return None
+    
+    def get_event(self, soup):
+        try : 
+            event_list = []
+            event = soup.find_all("div", {"class": "event-name"})
+            for i in event: 
+                event_list.append(i.text)
+
+            # event_text = ",".join(event_list)
+            return event_list
+        except :
+            return None
     
     def get_company_data(self, url):
         # print("testin")
-        response = requests.get(url)
+        # response = requests.get(url)
         company_data = dict()
 
-
+#
         proxy_support = urllib.request.ProxyHandler({'http': self.proxy,'https': self.proxy})
         opener = urllib.request.build_opener(proxy_support)
         urllib.request.install_opener(opener)
 
-        cookie_jar = cookiejar.CookieJar()
-        cookie_handler = urllib.request.HTTPCookieProcessor(cookie_jar)
-        opener.add_handler(cookie_handler)
+        # a_request = urllib.request.Request(self.url)
+        # a_request.add_header("Cookie", "ratingsvm=MzhlNzY0ZWYtMDcyNi00MGY1LThlNjctMGY4MDUxNWYwZjQwNjM4NTUxNTYxMDIzMDU4NjU1; Path=/; Domain=sustainalytics.com; Secure; HttpOnly;")
+        # page = urllib.request.urlopen(a_request).read()
 
+        cookie_jar = cookiejar.CookieJar()
+        
         # Add a specific cookie
         cookie = cookiejar.Cookie(
             version=0, name='ratingsvm', value=self.cookies, port=None, port_specified=False,
@@ -160,15 +194,15 @@ class MorningStarPipeline:
         )
 
         cookie_jar.set_cookie(cookie)
+        cookie_handler = urllib.request.HTTPCookieProcessor(cookie_jar)
+        opener.add_handler(cookie_handler)
+        
 
         with urllib.request.urlopen(url) as response:
             html = response.read()
+            # print(html)
             
             soup = BeautifulSoup(html, 'html.parser')
-
-            # company_name = self.get_company_name(soup)
-
-            # company_data["company_name"] = company_name
 
             esg_score = self.get_esg_score(soup)
             company_data["esg_score"] = esg_score
@@ -233,6 +267,15 @@ class MorningStarPipeline:
 
             management  = self.get_management(soup)
             company_data["management"] = management
+
+            exposure = self.get_exposure(soup)
+            company_data["exposure"] = exposure
+
+            sdgi = self.get_sdgi(soup)
+            company_data["sdgi"] = sdgi
+
+            event = self.get_event(soup)
+            company_data["event"] = event
 
             return company_data
 
@@ -303,7 +346,7 @@ class MorningStarPipeline:
     #     else:
     #         return all_data_company
 
-    def get(self):
+    def get_companies_registered(self):
         url = self.url
         ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -323,6 +366,20 @@ class MorningStarPipeline:
         opener = urllib.request.build_opener(proxy_support)
         urllib.request.install_opener(opener)
 
+        # cookie_jar = cookiejar.CookieJar()
+        # cookie_handler = urllib.request.HTTPCookieProcessor(cookie_jar)
+        # opener.add_handler(cookie_handler)
+
+        # # Add a specific cookie
+        # cookie = cookiejar.Cookie(
+        #     version=0, name='ratingsvm', value=self.cookies, port=None, port_specified=False,
+        #     domain='www.sustainalytics.com', domain_specified=False, domain_initial_dot=False,
+        #     path='/', path_specified=True, secure=True, expires=None, discard=True,
+        #     comment=None, comment_url=None, rest={'HttpOnly': True}, rfc2109=False
+        # )
+
+        # cookie_jar.set_cookie(cookie)
+
         # Mengkodekan data
         data_encoded = urllib.parse.urlencode(data).encode('utf-8')
 
@@ -332,11 +389,13 @@ class MorningStarPipeline:
         # Menambahkan header (jika diperlukan)
         request.add_header('Content-Type', 'application/x-www-form-urlencoded')
 
-        all_data_company = []
+        all_data_company = dict()
+        # href_company = []
+        # print("coba")
 
         # Mengirim permintaan dan membaca respons
         try:
-            with urllib.request.urlopen(request) as response:
+            with urllib.request.urlopen(request, timeout=300) as response:
                 response_data = response.read()
                 html = response_data.decode('utf-8')
                 # print(response_data.decode('utf-8'))
@@ -346,28 +405,38 @@ class MorningStarPipeline:
                 results = soup.find_all("div", {"class": "company-row"})
 
                 for i in results: 
+                    ticker = i.find("small")
+                    # print(ticker.text)
+                    # all_data_company.append(ticker.text)
                     href_a = i.find("a", attrs={'data-href': True})
+                    # href_company.append(href_a)
+                    all_data_company[ticker.text] = href_a["data-href"]
 
-                    url = f"https://www.sustainalytics.com/esg-rating/{href_a['data-href']}"
-                    # print(url)
-
-                    company_data = self.get_company_data(url)
-
-
-                    if len(self.country) > 0:
-                        if company_data["country"] in self.country and company_data["symbol"] != "-":
-                            all_data_company.append(company_data)
-
-                            print(company_data["symbol"])
-                    else :
-                        if company_data["symbol"] != "-":
-                            all_data_company.append(company_data)
-
-                            print(company_data["symbol"])
         except urllib.error.URLError as e:
             print(f'Error: {e.reason}')
 
         return all_data_company
+    
+    def get(self, href_a):
+        url = f"https://www.sustainalytics.com/esg-rating{href_a}"
+        # print(url)
+        all_data_company = []
+
+        company_data = self.get_company_data(url)
+
+        if len(self.country) > 0:
+            if company_data["country"] in self.country and company_data["symbol"] != "-":
+                all_data_company.append(company_data)
+
+                print(company_data["symbol"])
+        else :
+            if company_data["symbol"] != "-":
+                all_data_company.append(company_data)
+
+                print(company_data["symbol"])
+
+        return all_data_company
+
 
 
 
