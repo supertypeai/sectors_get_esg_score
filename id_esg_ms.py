@@ -13,6 +13,18 @@ from multiprocessing import Process
 url = os.environ.get("SUPABASE_URL")
 key = os.environ.get("SUPABASE_KEY")
 supabase = create_client(url, key)
+# print("halo")
+
+proxy = os.environ.get("proxy")
+cookies = os.environ.get("cookies")
+# print(cookies)
+pipeline = MorningStarPipeline("", "", "", 15000, ["Indonesia"], proxy, cookies)
+
+# # print(len(pipeline.get()))
+companies_registered = pipeline.get_companies_registered()
+companies_id_registered = list(companies_registered.keys())
+# companies_href_registered = companies_registered[1]
+# print(companies_id_registered)
 
 response_list_company = supabase.table('idx_company_profile').select('symbol').execute()
 
@@ -22,26 +34,33 @@ df_list_company = pd.DataFrame(list_company)
 companies_in_id_list = list(df_list_company["symbol"])
 
 companies_id = []
-# print(companies_in_id_list)
+href_companies = []
 
-for i in companies_in_id_list:
-    get_symbol = i.split(".")
+
+index = 0
+for i in range(0, len(companies_in_id_list)):
+    get_symbol = companies_in_id_list[i].split(".")
     symbol_identifier = "JKT:" + get_symbol[0]
-    companies_id.append(symbol_identifier)
+    if symbol_identifier in companies_id_registered :
+        companies_id.append(symbol_identifier)
+        href_companies.append(companies_registered[symbol_identifier])
 
-def scraping_ms1(companies_id):
+
+
+def scraping_ms1(companies_id, href_companies):
     result_companies_with_esg_score = []
-    for i in companies_id: 
+    for i in range(0, len(companies_id)): 
         
-        print(f"[Start to retrieve - {i}]")
-
+        print(f"[Start to retrieve - {companies_id[i]}]")
+        # print(href_companies[i])
         proxy = os.environ.get("proxy")
         cookies = os.environ.get("cookies")
+        # print(cookies)
         # print(cookies)
         pipeline = MorningStarPipeline("", "", i, 10, ["Indonesia"], proxy, cookies)
 
         # # print(len(pipeline.get()))
-        results = pipeline.get()
+        results = pipeline.get(href_companies[i])
         # print(results)
 
         if len(results) > 0 :
@@ -78,19 +97,20 @@ def scraping_ms1(companies_id):
     execution_time = end_time - start_time
     print(f"Waktu eksekusi: {execution_time} detik")
 
-def scraping_ms2(companies_id):
+def scraping_ms2(companies_id, href_companies):
     result_companies_with_esg_score = []
-    for i in companies_id: 
+    for i in range(0, len(companies_id)): 
         
-        print(f"[Start to retrieve - {i}]")
-
+        print(f"[Start to retrieve - {companies_id[i]}]")
+        # print(href_companies[i])
         proxy = os.environ.get("proxy")
         cookies = os.environ.get("cookies")
+        # print(cookies)
         # print(cookies)
         pipeline = MorningStarPipeline("", "", i, 10, ["Indonesia"], proxy, cookies)
 
         # # print(len(pipeline.get()))
-        results = pipeline.get()
+        results = pipeline.get(href_companies[i])
         # print(results)
 
         if len(results) > 0 :
@@ -121,25 +141,26 @@ def scraping_ms2(companies_id):
 
     df_esg_ms = pd.DataFrame(result_companies_with_esg_score)
     df_esg_ms.to_csv("id_esg_score2.csv", index = False)
-            
+    
     end_time = time.time()
 
     execution_time = end_time - start_time
     print(f"Waktu eksekusi: {execution_time} detik")
         
-def scraping_ms3(companies_id):
+def scraping_ms3(companies_id, href_companies):
     result_companies_with_esg_score = []
-    for i in companies_id: 
+    for i in range(0, len(companies_id)): 
         
-        print(f"[Start to retrieve - {i}]")
-
+        print(f"[Start to retrieve - {companies_id[i]}]")
+        # print(href_companies[i])
         proxy = os.environ.get("proxy")
         cookies = os.environ.get("cookies")
+        # print(cookies)
         # print(cookies)
         pipeline = MorningStarPipeline("", "", i, 10, ["Indonesia"], proxy, cookies)
 
         # # print(len(pipeline.get()))
-        results = pipeline.get()
+        results = pipeline.get(href_companies[i])
         # print(results)
 
         if len(results) > 0 :
@@ -167,28 +188,29 @@ def scraping_ms3(companies_id):
             print(f"{i} haven't registered on MS")
 
         print(f"[End to retrieve - {i}]")
-    
+
     df_esg_ms = pd.DataFrame(result_companies_with_esg_score)
     df_esg_ms.to_csv("id_esg_score3.csv", index = False)
-            
+    
     end_time = time.time()
 
     execution_time = end_time - start_time
     print(f"Waktu eksekusi: {execution_time} detik")
 
-def scraping_ms4(companies_id):
+def scraping_ms4(companies_id, href_companies):
     result_companies_with_esg_score = []
-    for i in companies_id: 
+    for i in range(0, len(companies_id)): 
         
-        print(f"[Start to retrieve - {i}]")
-
+        print(f"[Start to retrieve - {companies_id[i]}]")
+        # print(href_companies[i])
         proxy = os.environ.get("proxy")
         cookies = os.environ.get("cookies")
+        # print(cookies)
         # print(cookies)
         pipeline = MorningStarPipeline("", "", i, 10, ["Indonesia"], proxy, cookies)
 
         # # print(len(pipeline.get()))
-        results = pipeline.get()
+        results = pipeline.get(href_companies[i])
         # print(results)
 
         if len(results) > 0 :
@@ -217,10 +239,9 @@ def scraping_ms4(companies_id):
 
         print(f"[End to retrieve - {i}]")
 
-    
     df_esg_ms = pd.DataFrame(result_companies_with_esg_score)
     df_esg_ms.to_csv("id_esg_score4.csv", index = False)
-            
+    
     end_time = time.time()
 
     execution_time = end_time - start_time
@@ -230,17 +251,11 @@ def scraping_ms4(companies_id):
 # print(companies_id[5:10])
 
 if __name__ == "__main__": 
-    # scraping_ms1(companies_id[0:10])
+    # scraping_ms1(companies_id[0:2], href_companies[0:2])
     lenght_comp_id = len(companies_id)
     i1 = int(lenght_comp_id / 4)
     i2 = i1 + int(lenght_comp_id / 4)
     i3 = i2 + int(lenght_comp_id / 4)
-
-    # print(lenght_comp_id)
-    # print(i1)
-    # print(i2)
-    # print(i3)
-
 
     p1 = Process(target=scraping_ms1, args=(companies_id[0:i1], ))
     p2 = Process(target=scraping_ms2, args=(companies_id[i1:i2], ))
