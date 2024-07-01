@@ -368,42 +368,44 @@ class MorningStarPipeline:
             "resourcePackage": "Sustainalytics"
         }
 
-        # proxy = os.environ.get("proxy")
+        # ssl._create_default_https_context = ssl._create_unverified_context
 
-        proxy_support = urllib.request.ProxyHandler({'http': self.proxy,'https': self.proxy})
-        opener = urllib.request.build_opener(proxy_support)
+        # Initialize a cookie jar
+        cookie_jar = cookiejar.CookieJar()
+
+        # Add a specific cookie
+        cookie = cookiejar.Cookie(
+            version=0, name='ratingsvm', value=self.cookies, port=None, port_specified=False,
+            domain='www.sustainalytics.com', domain_specified=False, domain_initial_dot=False,
+            path='/', path_specified=True, secure=True, expires=None, discard=True,
+            comment=None, comment_url=None, rest={'HttpOnly': True}, rfc2109=False
+        )
+        cookie_jar.set_cookie(cookie)
+
+        # Set up a cookie handler with the cookie jar
+        cookie_handler = urllib.request.HTTPCookieProcessor(cookie_jar)
+
+        # # # Set up proxy handler if proxy is provided
+        # if proxy:
+        #     proxy_handler = urllib.request.ProxyHandler({'http': proxy, 'https': proxy})
+        #     opener = urllib.request.build_opener(cookie_handler, proxy_handler)
+        # else:
+        opener = urllib.request.build_opener(cookie_handler)
+
+        # Install the opener globally
         urllib.request.install_opener(opener)
 
-        # cookie_jar = cookiejar.CookieJar()
-        # cookie_handler = urllib.request.HTTPCookieProcessor(cookie_jar)
-        # opener.add_handler(cookie_handler)
+        # Define the URL to request
+        # url = f"https://www.sustainalytics.com/esg-rating{}"
 
-        # # Add a specific cookie
-        # cookie = cookiejar.Cookie(
-        #     version=0, name='ratingsvm', value=self.cookies, port=None, port_specified=False,
-        #     domain='www.sustainalytics.com', domain_specified=False, domain_initial_dot=False,
-        #     path='/', path_specified=True, secure=True, expires=None, discard=True,
-        #     comment=None, comment_url=None, rest={'HttpOnly': True}, rfc2109=False
-        # )
+        # Make the request
 
-        # cookie_jar.set_cookie(cookie)
-
-        # Mengkodekan data
         data_encoded = urllib.parse.urlencode(data).encode('utf-8')
-
-        # Membuat objek Request
-        request = urllib.request.Request(url, data=data_encoded)
-
-        # Menambahkan header (jika diperlukan)
-        request.add_header('Content-Type', 'application/x-www-form-urlencoded')
-
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'}, data=data_encoded)
         all_data_company = dict()
-        # href_company = []
-        # print("coba")
 
-        # Mengirim permintaan dan membaca respons
         try:
-            with urllib.request.urlopen(request, timeout=300) as response:
+            with urllib.request.urlopen(req) as response:
                 response_data = response.read()
                 html = response_data.decode('utf-8')
                 # print(response_data.decode('utf-8'))

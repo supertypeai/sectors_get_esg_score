@@ -274,6 +274,8 @@ if __name__ == "__main__":
     p3 = Process(target=scraping_ms3, args=(companies_id[i2:i3], href_companies[i2:i3] ))
     p4 = Process(target=scraping_ms4, args=(companies_id[i3:lenght_comp_id], href_companies[i3:lenght_comp_id]))
 
+    # p1 = Process(target=scraping_ms1, args=(companies_id[0:2], href_companies[0:4]))
+   
     p1.start()
     p2.start()
     p3.start()
