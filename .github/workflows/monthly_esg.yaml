@@ -32,4 +32,4 @@ jobs:
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
         # Run the specific Python script
-        run: python scrapper/idx_pipeline.py
+        run: python scraper/idx_pipeline.py
