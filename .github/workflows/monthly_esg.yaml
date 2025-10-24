@@ -1,0 +1,35 @@
+name: Monthly ESG Pipeline
+
+# Allows you to run this workflow manually from the Actions tab in GitHub
+on:
+  workflow_dispatch:
+  # Add a cron job to run monthly
+  schedule:
+    # Runs at 00:00 UTC on the 1st day of every month
+    - cron: "0 0 1 * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository Content
+        uses: actions/checkout@v2 # Checkout the repository content to GitHub runner
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10" # Install the Python version needed
+
+      - name: Install Python Packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Execute Scraper Pipeline (scrapper/idx_pipeline.py)
+        # Set environment variables using secrets, which the script can access
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+        # Run the specific Python script
+        run: python scrapper/idx_pipeline.py
