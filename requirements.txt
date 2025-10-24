@@ -3,3 +3,5 @@ pandas==2.2.3
 python-dotenv==1.0.1
 supabase==2.16.0
 requests==2.32.3
+typing-extensions
+cloudscraper==1.2.71
