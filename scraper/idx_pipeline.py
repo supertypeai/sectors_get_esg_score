@@ -22,7 +22,7 @@ MAX_DELAY = 3.0  # Max random delay
 # Supabase Configuration
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-TABLE_NAME = "idx_esg_score_temp"
+TABLE_NAME = "idx_esg_score"
 
 # --- Helper Functions for Data Transformation ---
 
