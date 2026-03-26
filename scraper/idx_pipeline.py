@@ -66,7 +66,8 @@ def create_scraper_session() -> requests.Session:
     Initializes a session that impersonates a modern Chrome browser to bypass WAF.
     Routes traffic through a PROXY if provided in the environment.
     """
-    session = requests.Session(impersonate="chrome120")
+    # ADDED: verify=False to bypass SSL errors caused by the proxy's self-signed cert
+    session = requests.Session(impersonate="chrome120", verify=False)
     session.headers.update(HEADERS)
 
     # --- PROXY INJECTION ---
