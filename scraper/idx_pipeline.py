@@ -24,6 +24,18 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 TABLE_NAME = "idx_esg_score"
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9,id;q=0.8",  # Specifically include 'id' for Indonesian context
+    "Referer": "https://sustainability.idx.co.id/",
+    "Origin": "https://sustainability.idx.co.id",
+    "Connection": "keep-alive",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-origin",
+}
+
 # --- Helper Functions for Data Transformation ---
 
 
@@ -55,7 +67,7 @@ def get_all_tickers(scraper: cloudscraper.CloudScraper) -> Optional[List[Dict]]:
     """Fetches the list of all ticker codes using the cloudscraper instance."""
     try:
         print("Fetching the list of all company tickers...")
-        response = scraper.get(TICKER_LIST_URL)
+        response = scraper.get(TICKER_LIST_URL, headers=HEADERS, timeout=30)
         response.raise_for_status()
         data = response.json()
         if data.get("status") == "success" and "data" in data:
@@ -83,7 +95,7 @@ def get_esg_data_for_ticker(
             f"Waiting for {delay:.2f} seconds before fetching data for {ticker_code}..."
         )
         time.sleep(delay)
-        response = scraper.get(url)
+        response = scraper.get(url, headers=HEADERS, timeout=30)
         response.raise_for_status()
         data = response.json()
         if data.get("status") == "success" and "data" in data:
