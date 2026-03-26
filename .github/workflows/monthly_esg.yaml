@@ -30,6 +30,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          PROXY: ${{ secrets.PROXY }} # <-- Added PROXY secret here
 
         # Run the specific Python script
         run: python scraper/idx_pipeline.py

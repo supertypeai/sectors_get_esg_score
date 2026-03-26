@@ -17,16 +17,15 @@ load_dotenv()  # Load variables from .env file
 BASE_URL = "https://sustainability.idx.co.id/api"
 TICKER_LIST_URL = f"{BASE_URL}/esg-score-title"
 ESG_SCORE_URL_TEMPLATE = f"{BASE_URL}/esg-scores/{{ticker}}?lang=en"
-MIN_DELAY = 1.5  # Slightly increased min delay to prevent rate-limiting
-MAX_DELAY = 4.0  # Max random delay
+MIN_DELAY = 1.5
+MAX_DELAY = 4.0
 
-# Supabase Configuration
+# Environment Variables (Including GitHub Secrets)
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+PROXY = os.getenv("PROXY")  # Load the PROXY secret
 TABLE_NAME = "idx_esg_score"
 
-# We omit 'User-Agent' here because curl_cffi automatically injects the perfect
-# User-Agent that matches the Chrome 120 TLS fingerprint.
 HEADERS = {
     "Accept": "application/json, text/plain, */*",
     "Accept-Language": "en-US,en;q=0.9,id;q=0.8",
@@ -42,7 +41,6 @@ HEADERS = {
 
 
 def _to_float(value: Optional[str]) -> Optional[float]:
-    """Safely convert a string to a float, returning None on failure."""
     if value is None:
         return None
     try:
@@ -52,7 +50,6 @@ def _to_float(value: Optional[str]) -> Optional[float]:
 
 
 def _to_int(value: Optional[str]) -> Optional[int]:
-    """Safely convert a string to an integer, returning None on failure."""
     if value is None:
         return None
     try:
@@ -67,15 +64,21 @@ def _to_int(value: Optional[str]) -> Optional[int]:
 def create_scraper_session() -> requests.Session:
     """
     Initializes a session that impersonates a modern Chrome browser to bypass WAF.
-    Also fetches the homepage first to acquire any necessary session cookies.
+    Routes traffic through a PROXY if provided in the environment.
     """
-    # impersonate="chrome120" accurately mimics a real browser's TLS fingerprint
     session = requests.Session(impersonate="chrome120")
     session.headers.update(HEADERS)
 
+    # --- PROXY INJECTION ---
+    if PROXY:
+        print("Proxy secret detected. Configuring session to use proxy...")
+        proxies = {"http": PROXY, "https": PROXY}
+        session.proxies.update(proxies)
+    else:
+        print("No PROXY variable found. Proceeding with default runner IP...")
+
     try:
         print("Initializing session and fetching initial cookies from homepage...")
-        # Visiting the root domain first often solves token/cookie validation issues
         session.get("https://sustainability.idx.co.id/", timeout=30)
         time.sleep(random.uniform(1.0, 2.0))
     except Exception as e:
@@ -85,13 +88,14 @@ def create_scraper_session() -> requests.Session:
 
 
 def get_all_tickers(session: requests.Session) -> Optional[List[Dict]]:
-    """Fetches the list of all ticker codes using the active session."""
     try:
         print("Fetching the list of all company tickers...")
         response = session.get(TICKER_LIST_URL, timeout=30)
 
         if response.status_code == 403:
-            print("Error: 403 Forbidden. The WAF is still blocking the request.")
+            print(
+                "Error: 403 Forbidden. The WAF is still blocking the request. The Proxy might be flagged or improperly formatted."
+            )
             return None
         elif response.status_code != 200:
             print(f"Error fetching ticker list: HTTP {response.status_code}")
@@ -113,7 +117,6 @@ def get_all_tickers(session: requests.Session) -> Optional[List[Dict]]:
 def get_esg_data_for_ticker(
     session: requests.Session, ticker_code: str
 ) -> Optional[Dict]:
-    """Fetches the ESG score data for a single ticker code."""
     url = ESG_SCORE_URL_TEMPLATE.format(ticker=ticker_code)
     try:
         delay = random.uniform(MIN_DELAY, MAX_DELAY)
@@ -150,10 +153,6 @@ def get_esg_data_for_ticker(
 
 
 def transform_data(api_data: Dict) -> Optional[Dict]:
-    """
-    Transforms the raw API data to match the target Supabase table schema.
-    Returns None if essential NOT NULL fields are missing.
-    """
     sustainalytics_data = api_data.get("sustainalytics")
     if not sustainalytics_data:
         return None
@@ -191,7 +190,9 @@ if __name__ == "__main__":
     print("Starting ESG data pipeline for IDX.")
 
     if not SUPABASE_URL or not SUPABASE_KEY:
-        print("Error: SUPABASE_URL and SUPABASE_KEY must be set in the .env file.")
+        print(
+            "Error: SUPABASE_URL and SUPABASE_KEY must be set in the environment variables."
+        )
         exit(1)
 
     try:
@@ -201,7 +202,6 @@ if __name__ == "__main__":
         print(f"Error connecting to Supabase: {e}")
         exit(1)
 
-    # Initialize WAF-bypassing session
     session = create_scraper_session()
 
     tickers = get_all_tickers(session)
