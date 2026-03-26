@@ -4,5 +4,4 @@ python-dotenv==1.0.1
 supabase==2.16.0
 requests==2.32.3
 typing-extensions
-# cloudscraper==1.2.71
-curl_cffi==2.4.0
+curl_cffi
